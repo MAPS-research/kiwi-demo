@@ -1,0 +1,41 @@
+import type { CSSProperties } from 'react';
+const paths = {
+  arrow: 'M5 12h14m-5-5 5 5-5 5',
+  chevron: 'm9 5 7 7-7 7',
+  back: 'm15 5-7 7 7 7',
+  book: 'M12 5c-3-2-7-2-10-1v15c3-1 7-1 10 1m0-15c3-2 7-2 10-1v15c-3-1-7-1-10 1V5',
+  file: 'M14 2H5a1 1 0 0 0-1 1v18a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1V8l-6-6Zm0 0v6h6M8 13h8m-8 4h6',
+  chat: 'M21 11a9 9 0 0 1-9 9H4l-3 3V11a10 10 0 0 1 20 0ZM7 9h10M7 13h6',
+  spark: 'm12 3 2.4 6.6L21 12l-6.6 2.4L12 21l-2.4-6.6L3 12l6.6-2.4L12 3ZM20 2v4m-2-2h4',
+  lab: 'M9 2h6m-5 0v7L4 19a2 2 0 0 0 2 3h12a2 2 0 0 0 2-3L14 9V2M7 15h10',
+  school: 'm2 9 10-5 10 5-10 5L2 9Zm4 2v6c4 3 8 3 12 0v-6m4-2v8',
+  reset: 'M3 10a9 9 0 1 1 1 8M3 4v6h6',
+  check: 'm5 12 4 4L19 6',
+  close: 'm6 6 12 12M6 18 18 6',
+  external: 'M14 3h7v7m0-7L10 14m0-11H4a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1v-6',
+  github: 'M9 19c-4 1-4-2-6-2m14 5v-4c0-1-.3-2-1-2.5 3-.4 5-2 5-5.5 0-1.5-.5-2.5-1.5-3.5.3-1 .3-2-.2-3-2-.2-3.3 1-4 1.5a13 13 0 0 0-6.6 0C8 4.5 6.7 3.3 4.7 3.5c-.5 1-.5 2-.2 3C3.5 7.5 3 8.5 3 10c0 3.5 2 5.1 5 5.5-.7.5-1 1.5-1 2.5v4',
+  play: 'm9 5 11 7-11 7V5Z',
+  grid: 'M3 3h7v7H3V3Zm11 0h7v7h-7V3ZM3 14h7v7H3v-7Zm11 0h7v7h-7v-7Z',
+  chart: 'M4 3v18h17M8 16v-4m5 4V7m5 9v-7',
+  edit: 'm16 3 5 5M4 20l5-1L21 7a2 2 0 0 0-5-5L4 14v6Z',
+  users: 'M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2m20 0v-2a4 4 0 0 0-3-4M13 7a4 4 0 1 1-8 0 4 4 0 0 1 8 0Zm4-4a4 4 0 0 1 0 8',
+  plus: 'M12 5v14M5 12h14',
+  clock: 'M12 8v5l3 2m7-3a10 10 0 1 1-20 0 10 10 0 0 1 20 0Z',
+  info: 'M12 11v6m0-10v.01m10 5a10 10 0 1 1-20 0 10 10 0 0 1 20 0Z',
+  menu: 'M4 6h16M4 12h16M4 18h16',
+  folder: 'M3 5h6l2 2h10v13H3V5Z',
+  down: 'm6 9 6 6 6-6',
+  search: 'M21 21l-5-5m2-6a8 8 0 1 1-16 0 8 8 0 0 1 16 0Z',
+  minus: 'M5 12h14',
+  expand: 'M8 3H3v5m13-5h5v5M3 16v5h5m13-5v5h-5',
+  panel: 'M3 4h18v16H3V4Zm12 0v16',
+  window: 'M3 4h18v16H3V4Zm0 4h18',
+  collapse: 'M3 5h13M3 12h10M3 19h13m5-12-5 5 5 5',
+  upload: 'M12 16V3m-5 5 5-5 5 5M3 15v6h18v-6',
+  save: 'M4 3h14l3 3v15H3V3h1Zm3 0v7h10V3M7 21v-7h10v7',
+  heart: 'M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 21l8.8-8.6a5.5 5.5 0 0 0 0-7.8Z',
+} as const;
+export type IconName = keyof typeof paths;
+export function Icon({ name, size = 20, style }: { name: IconName; size?: number; style?: CSSProperties }) {
+  return <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.65" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={style}><path d={paths[name]} /></svg>;
+}
