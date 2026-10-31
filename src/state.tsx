@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useReducer, type ReactNode } from 'react';
 import { DECK, KNOWN, type Card } from './cards';
 import type { Preset, Role } from './content';
-export type Message = { question: string; answer: string; page: number; context: string };
+export type Message = { id?: string; question: string; answer: string; page: number; context: string; pending?: boolean; stopped?: boolean; feedback?: 'helpful' | 'unhelpful' };
 export type DemoState = {
   version: 1; practiceAdded: boolean; appEnabled: boolean; preset: Preset;
   page: number; material: 'lesson' | 'practice'; drawn: Card[]; selected: Card[];
@@ -19,6 +19,8 @@ export type Action =
   | { type: 'material'; material: 'lesson' | 'practice' }
   | { type: 'draw'; card: Card } | { type: 'select'; card: Card } | { type: 'reset-lab' }
   | { type: 'message'; message: Message }
+  | { type: 'answer'; id: string; answer: string; pending?: boolean; stopped?: boolean }
+  | { type: 'feedback'; index: number; feedback: Message['feedback'] }
   | { type: 'screen'; role: Role; screen: string }
   | { type: 'tour'; role: Role; step: number; completed?: boolean };
 export function reducer(state: DemoState, action: Action): DemoState {
@@ -33,6 +35,8 @@ export function reducer(state: DemoState, action: Action): DemoState {
     case 'select': return KNOWN.includes(action.card) || state.drawn.includes(action.card) ? state : { ...state, selected: state.selected.includes(action.card) ? state.selected.filter(c => c !== action.card) : [...state.selected, action.card] };
     case 'reset-lab': return { ...state, drawn: [], selected: [] };
     case 'message': return { ...state, messages: [...state.messages, action.message].slice(-20) };
+    case 'answer': return { ...state, messages: state.messages.map(message => message.id === action.id ? { ...message, answer: action.answer, pending: action.pending, stopped: action.stopped } : message) };
+    case 'feedback': return { ...state, messages: state.messages.map((message, index) => index === action.index ? { ...message, feedback: action.feedback } : message) };
     case 'screen': return { ...state, lastScreen: { ...state.lastScreen, [action.role]: action.screen } };
     case 'tour': return { ...state, tours: { ...state.tours, [action.role]: { step: Math.max(0, Math.min(3, action.step)), started: true, completed: action.completed ?? false } } };
   }
@@ -55,7 +59,7 @@ export function loadState(): DemoState {
       page: Number.isInteger(value.page) && value.page >= 0 && value.page < 3 ? value.page : 0,
       material: value.material === 'practice' && value.practiceAdded ? 'practice' : 'lesson', drawn,
       selected: Array.isArray(value.selected) ? [...new Set<Card>(value.selected.filter((c: Card) => DECK.includes(c) && !KNOWN.includes(c) && !drawn.includes(c)))] : [],
-      messages: Array.isArray(value.messages) ? value.messages.filter((m: Message) => m && typeof m.question === 'string' && typeof m.answer === 'string' && typeof m.context === 'string' && Number.isInteger(m.page) && m.page >= 0 && m.page < 3).slice(-20) : [], tours, lastScreen,
+      messages: Array.isArray(value.messages) ? value.messages.filter((m: Message) => m && typeof m.question === 'string' && typeof m.answer === 'string' && typeof m.context === 'string' && Number.isInteger(m.page) && m.page >= 0 && m.page < 3).slice(-20).map((m: Message) => ({ ...m, stopped: m.pending ? true : m.stopped, pending: false })) : [], tours, lastScreen,
     };
   } catch { return initialState(); }
 }

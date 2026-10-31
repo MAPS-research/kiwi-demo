@@ -4,6 +4,8 @@ import { afterEach, beforeEach, vi } from 'vitest';
 
 beforeEach(() => {
   sessionStorage.clear();
+  localStorage.clear();
+  document.documentElement.removeAttribute('data-theme');
   window.location.hash = '/';
 });
 afterEach(() => cleanup());

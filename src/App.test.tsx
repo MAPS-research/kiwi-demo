@@ -17,7 +17,7 @@ describe('connected demo journeys', () => {
     await user.keyboard(' ');
     expect(heart).toHaveAttribute('aria-pressed', 'true');
     await user.click(screen.getByRole('button', { name: 'Ask Kiwi' }));
-    expect(screen.getByRole('button', { name: 'Close assistant' })).toHaveFocus();
+    expect(screen.getByRole('textbox', { name: 'Sample question' })).toHaveFocus();
     await user.keyboard('{Escape}');
     await waitFor(() => expect(screen.getByRole('button', { name: 'Ask Kiwi' })).toHaveFocus());
   });
@@ -34,6 +34,8 @@ describe('connected demo journeys', () => {
     expect(screen.getByRole('heading', { name: 'Count the cards.' })).toBeVisible();
     await user.click(screen.getByRole('button', { name: 'Ask for a hint' }));
     await user.click(screen.getByRole('button', { name: 'Why are there nine helpful cards?' }));
+    await user.click(screen.getByRole('button', { name: 'Send question' }));
+    await screen.findByText('Kiwi finished the sample answer.');
     expect(screen.getByText(/Start with what you can see/)).toBeVisible();
     expect(screen.queryByText(/your chance is 9\/47/)).not.toBeInTheDocument();
   });
@@ -89,6 +91,8 @@ describe('connected demo journeys', () => {
     await user.click(screen.getByRole('button', { name: 'Ask Kiwi' }));
     expect(screen.getByRole('dialog', { name: 'Kiwi assistant' })).toBeVisible();
     await user.click(screen.getByRole('button', { name: 'Why are there nine helpful cards?' }));
+    await user.click(screen.getByRole('button', { name: 'Send question' }));
+    await screen.findByText('Kiwi finished the sample answer.');
     await user.click(screen.getByRole('button', { name: 'Side panel view' }));
     expect(screen.queryByRole('dialog', { name: 'Kiwi assistant' })).not.toBeInTheDocument();
     expect(within(screen.getByRole('complementary', { name: 'Kiwi assistant' })).getByText(/A deck has 13 hearts/)).toBeVisible();
@@ -102,6 +106,8 @@ describe('connected demo journeys', () => {
     await user.click(screen.getByRole('button', { name: /Explore as a student/ }));
     await user.click(screen.getAllByRole('button', { name: 'Ask Kiwi' })[0]);
     await user.click(screen.getByRole('button', { name: 'Why isn’t two draws exactly twice the chance?' }));
+    await user.click(screen.getByRole('button', { name: 'Send question' }));
+    await screen.findByText('Kiwi finished the sample answer.');
     await user.click(screen.getByRole('button', { name: /One chance or two\? · p. 3/ }));
     expect(screen.getByRole('heading', { name: 'One chance or two?' })).toBeVisible();
     expect(screen.queryByRole('complementary', { name: 'Kiwi assistant' })).not.toBeInTheDocument();

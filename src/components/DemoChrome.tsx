@@ -1,5 +1,6 @@
 import { COURSE, GITHUB, type Role } from '../content';
 import { Icon } from './Icon';
+import DisplayMenu from './DisplayMenu';
 
 type Props = {
   role: Role;
@@ -33,6 +34,7 @@ export default function DemoChrome(props: Props) {
       <span className="header-divider" />
       <div className="class-title"><strong>{COURSE}</strong></div>
       <span className="product-view-label">{props.role === 'student' ? 'Student view' : 'Teacher view'}</span>
+      <DisplayMenu />
       <button className="icon-button product-role-action" onClick={() => props.onRole(props.role === 'student' ? 'teacher' : 'student')} aria-label={props.role === 'student' ? 'Switch to Teacher View' : 'Switch to Student View'} title={props.role === 'student' ? 'Switch to Teacher View' : 'Switch to Student View'}><Icon name={props.role === 'student' ? 'school' : 'book'} size={24} /></button>
     </header>
   </>;

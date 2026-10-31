@@ -34,6 +34,12 @@ const paths = {
   upload: 'M12 16V3m-5 5 5-5 5 5M3 15v6h18v-6',
   save: 'M4 3h14l3 3v15H3V3h1Zm3 0v7h10V3M7 21v-7h10v7',
   heart: 'M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 21l8.8-8.6a5.5 5.5 0 0 0 0-7.8Z',
+  settings: 'M4 6h9m4 0h3M4 12h3m4 0h9M4 18h11m4 0h1M13 3v6M7 9v6m8 0v6',
+  send: 'M12 20V4m-6 6 6-6 6 6',
+  stop: 'M6 6h12v12H6Z',
+  copy: 'M9 8h12v13H9V8ZM5 16H3V3h12v2',
+  thumbUp: 'M7 10v11H3V10h4Zm0 1 5-8c2 0 3 1 2 4l-1 3h6c2 0 2 1 2 3l-2 7H7',
+  thumbDown: 'M7 14V3H3v11h4Zm0-1 5 8c2 0 3-1 2-4l-1-3h6c2 0 2-1 2-3l-2-7H7',
 } as const;
 export type IconName = keyof typeof paths;
 export function Icon({ name, size = 20, style }: { name: IconName; size?: number; style?: CSSProperties }) {

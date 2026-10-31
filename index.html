@@ -4,7 +4,16 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="./kiwi-mark.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#6a1b9a" />
+    <meta name="theme-color" content="#f6f4f3" />
+    <script>
+      // Apply the stored display choice before the first paint; storage can be blocked.
+      try {
+        const choice = JSON.parse(localStorage.getItem('kiwi-demo-display-v1') || 'null')?.mode;
+        document.documentElement.dataset.theme = choice === 'dark' || choice !== 'light' && matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      } catch {
+        document.documentElement.dataset.theme = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      }
+    </script>
     <meta name="description" content="Explore Kiwi, the open-source learning framework. Try a lesson, experiment with cards, and see learning from the student and teacher perspectives." />
     <title>Kiwi · Think in Probabilities</title>
   </head>

@@ -58,19 +58,23 @@ The relative Vite base and hash routes work at `https://YOUR-OWNER.github.io/YOU
 
 ## What works
 
-- Read three lesson pages, ask prepared contextual questions, and follow citations.
+- Read three lesson pages, choose and send prepared contextual questions, stop a reply while keeping the partial answer, and follow citations.
+- Switch between Light, Dark, and Match device; control Kiwi animation with reduced-motion support.
+- Resize side chat with the mouse or keyboard, copy answers, and keep helpful/not-helpful feedback locally.
 - Select helpful cards, check the count, and draw a random turn and river without replacement.
 - Add a practice sheet, save a guidance preset, and enable an app in Teacher; see the changes in Student.
 - Follow either role’s four-step tour, pause, resume, restart, or switch perspectives.
 - Filter sample analytics and inspect individual fictional questions.
 
-Settings, draws, chat history, and tour progress are stored in session storage, scoped to the current browser tab. Refresh preserves them. If storage is unavailable, the demo works in memory. “Reset demo” clears the experience and returns to the chooser. No user data is transmitted or tracked.
+Class settings, draws, chat history, answer feedback, and tour progress are stored in session storage, scoped to the current browser tab. Refresh preserves them; an interrupted reply is restored as a stopped partial answer. Display settings are stored separately in local storage, so the theme and animation choice survive a new visit. If storage is unavailable, the demo works in memory. “Reset demo” clears the class experience and returns to the chooser, keeping display preferences. No user data is transmitted or tracked.
 
 AI replies are scripted examples. Presets deliberately support two prepared instruction styles. Practice-sheet chat provides hints under either style. Analytics are a fixed fictional snapshot, including practice questions; they do not reflect visitor activity or the current material list. Draw Lab is a demo-created example of a custom Kiwi App, not a bundled framework feature.
 
 ## Relationship to Kiwi’s UI
 
-The product shell follows the supplied Kiwi source: its logo, self-hosted Montserrat, purple theme, compact navigation, document drawer, viewer toolbar, centered Kiwi Chat window, and teacher page patterns. The demo reproduces this selected interface in lightweight React and CSS; it does not import the framework’s MUI, PDF, authentication, or service dependencies. The framework repository is unchanged.
+The product shell adapts Nagi’s **Ruled Folio** UI from the Kiwi [`Nagi-ui` branch at `1b3f288`](https://github.com/MAPS-research/kiwi/tree/1b3f2881053f00385fb8035a282be2ee368a890a). It uses the branch’s warm neutral/green light and dark palettes, self-hosted Source Sans 3 with Chinese fallbacks, thin rules, flat surfaces, and shared focus states. Montserrat is reserved for the wordmark.
+
+The demo retains its lightweight React/CSS implementation and existing routes rather than importing MUI, PDF, authentication, or service dependencies. The lesson remains white paper in dark mode. Unlike the framework’s deployment-gated settings, both dark mode and Kiwi animation are available immediately here; device reduced motion always takes precedence. The framework repository is unchanged.
 
 Source references below are relative to `kiwi-ui/src/` in the supplied framework repository:
 
@@ -78,12 +82,14 @@ Source references below are relative to `kiwi-ui/src/` in the supplied framework
 | --- | --- |
 | 52 px product header and 44 px student tabs | `components/TopNav/TopNav.tsx`, `pages/ClassLayout.tsx` |
 | Folder rail, Lecture/Recitation drawer, and document toolbar | `components/Chat/PDFComponent.tsx`, `components/PDFViewer/PDFViewerForStudent.tsx` |
-| Circular chat launcher; centered modal, side panel, and fullscreen layouts | `components/GlobalChat/GlobalChatButton.tsx`, `components/GlobalChat/GlobalChatModal.tsx` |
+| Round Kiwi launcher; non-blocking floating, resizable side, and fullscreen chat | `components/GlobalChat/GlobalChatButton.tsx`, `components/GlobalChat/GlobalChatModal.tsx` |
+| Theme, display preferences, type, and focus treatments | `Theme.ts`, `theme/generated/kiwi-ui.tokens.css`, `components/TopNav/DisplayMenu.tsx` |
+| Kiwi status line, question bubbles, answer actions, and Send/Stop | `components/Chat/statusLine/`, `components/Chat/ChatMessages.tsx`, `components/Chat/ChatField.tsx` |
 | 220 px collapsible teacher navigation and page spacing | `components/NavigationSidebar/NavigationSidebar.tsx`, `components/AdminPage/AdminPage.tsx`, `components/AdminPage/AdminPageHeader.tsx` |
 | Material lists, class instruction form, and app table | `pages/admin/Materials.tsx`, `pages/admin/ClassEdit.tsx`, `pages/admin/ClassKiwiAppsSettings.tsx` |
 | Analytics cards, topics, and question details | `components/ClassAnalytics/` |
 
-The Student/Teacher chooser, separate demo toolbar, optional tours, prepared lesson, Draw Lab, and sample prompts are demo additions. Lesson pages use responsive HTML inside the document viewer. Uploads and arbitrary instruction editing are replaced by prepared examples. Chat offers scripted questions instead of a live composer. Unsupported product features are omitted; this is a working subset, not a complete replica.
+The Student/Teacher chooser, separate demo toolbar, optional tours, prepared lesson, Draw Lab, and sample prompts are demo additions. Lesson pages use responsive HTML inside the document viewer. Uploads and arbitrary instruction editing are replaced by prepared examples. Chat’s read-only composer holds a selected prepared question. Send (or Enter) progressively reveals its scripted reply; Stop (or Escape while answering) keeps the text already shown. The status words explicitly describe a sample answer, not a live search or AI request. Feedback and copying work locally; there is no backend flagging, sharing, or regeneration endpoint. The panel has no backdrop or focus trap, so materials and menus remain usable, and closing it returns focus to the launcher. Unsupported product features are omitted; this is a working subset, not a complete replica.
 
 ## Verify and maintain
 
@@ -101,13 +107,20 @@ npm run build
 - `src/state.tsx`: shared state, session persistence, and reset behavior.
 - `src/components/`: role chooser, student views, assistant, and lazy-loaded teacher views; `DemoChrome.tsx` keeps demo controls separate from the product header.
 - `src/styles.css`: base styles, original lesson illustrations, role chooser, Draw Lab, and tours.
-- `src/kiwi-interface.css`: source-aligned product layouts, theme, responsive controls, and accessible focus styles.
+- `src/kiwi-interface.css`: source-aligned product layouts and responsive controls.
+- `src/theme/tokens.css`: the resolved subset of Nagi’s light/dark tokens used by the demo.
+- `src/theme/ruled-folio.css`: shared components, reading rules, paper exceptions, chart treatment, and chat layouts.
+- `src/theme/DisplayPreferences.tsx`: persisted display choices and device preference listeners.
+- `src/components/KiwiStatusLine.tsx`: the small companion’s walk/flight sequence, paused when hidden and disabled for reduced motion.
+- `src/ui-refresh.test.tsx`: display persistence, blocked storage, device preferences, Stop/reload behavior, keyboard resizing, and feedback coverage.
 
 The reference hand is A♥ 7♥ with K♥ 2♥ 9♣ on the flop. With only these five known cards, next-card flush probability is `9/47`; completion by the river is `1 - (38/47 × 37/46)`. These values measure completing a heart flush, not winning the hand.
 
 ## Attribution
 
-Kiwi branding is copied from the supplied MIT-licensed Kiwi repository. Its license is retained in `public/KIWI-LICENSE.txt` and shipped with the static build. Montserrat is self-hosted from `@fontsource-variable/montserrat`; its SIL Open Font License is shipped as `FONT-LICENSE.txt`.
+Kiwi branding, selected design tokens, and the six companion WebP assets are copied/adapted from the MIT-licensed Kiwi `Nagi-ui` branch (`1b3f288`). Its license is retained in `public/KIWI-LICENSE.txt` and shipped with the static build. The companion assets come from `kiwi-ui/src/components/Chat/statusLine/assets/`; the source records their artwork provenance in `.design-foundations/mocks/assets/mascot/provenance.md`.
+
+Source Sans 3 is self-hosted from the branch’s `.design-foundations/mocks/assets/fonts/`, with its SIL Open Font License shipped as `SOURCE-SANS-LICENSE.txt`. Montserrat is self-hosted from `@fontsource-variable/montserrat`, with its license in `FONT-LICENSE.txt`. All fonts and artwork load from the demo’s own origin.
 
 The lesson, card examples, and fictional activity records are original demo content. Further-reading references:
 
