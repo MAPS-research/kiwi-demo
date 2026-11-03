@@ -1,15 +1,16 @@
-name: Deploy demo to GitHub Pages
+name: Validate and deploy demo to AWS S3
 
 on:
   push:
     branches: [main]
+  pull_request:
   workflow_dispatch:
 
 permissions:
   contents: read
 
 concurrency:
-  group: pages
+  group: kiwi-demo-production
   cancel-in-progress: false
 
 jobs:
@@ -17,7 +18,6 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      pages: read
     steps:
       - name: Check out source
         uses: actions/checkout@v7
@@ -36,24 +36,39 @@ jobs:
         run: npm test
       - name: Build static demo
         run: npm run build
-      - name: Configure GitHub Pages
-        uses: actions/configure-pages@v5
+      - name: Validate static files
+        run: python3 scripts/check-deployment.py
       - name: Upload static build
-        uses: actions/upload-pages-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
-          path: dist
+          name: demo-dist
+          path: dist/
+          if-no-files-found: error
 
   deploy:
-    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
     needs: build
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     permissions:
-      pages: write
+      contents: read
       id-token: write
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+      - name: Check out source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Download static build
+        uses: actions/download-artifact@v7
+        with:
+          name: demo-dist
+          path: dist/
+      - name: Authenticate to AWS with OIDC
+        uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd # v6.3.0
+        with:
+          role-to-assume: arn:aws:iam::211933323811:role/kiwi-demo-github-deploy
+          role-session-name: kiwi-demo-${{ github.run_id }}
+          aws-region: ap-southeast-1
+          allowed-account-ids: '211933323811'
+      - name: Publish and verify demo
+        run: bash scripts/deploy-s3.sh --apply
