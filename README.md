@@ -38,23 +38,36 @@ The Vite base is relative (`./`). The root page, scripts, font, and branding ass
 
 Serve the emitted files over HTTP(S); opening `index.html` directly with `file://` is not supported. Hashed assets can use long-lived immutable caching; let `index.html` revalidate. The production page makes only same-origin asset requests. Further-reading and GitHub links navigate externally only when a visitor follows them.
 
-## Deploy to GitHub Pages
+## Deploy to AWS S3
 
-The included `.github/workflows/pages.yml` installs dependencies, runs type checking and tests, builds the demo, and publishes only `dist/`. It runs on pushes to `main` and can also be started manually. It uses GitHub's built-in workflow token; no application secrets or API keys are needed.
+Live demo: **https://kiwiai.org/demo/index.html**.
 
-1. Create an empty GitHub repository without an initial README, license, or `.gitignore`.
-2. Add that repository as `origin` and push the local `main` branch:
+The `.github/workflows/pages.yml` workflow now validates pull requests and
+publishes pushes to `main` to AWS S3 behind CloudFront. The filename is retained
+for existing workflow references; GitHub Pages is no longer the publish target.
+Only `dist/` is uploaded, under the `demo/` prefix. The demo keeps its relative
+Vite base and hash routes, so student and teacher deep links work without SPA
+fallbacks.
 
-   ```sh
-   git remote add origin https://github.com/YOUR-OWNER/YOUR-REPO.git
-   git push -u origin main
-   ```
+GitHub Actions uses OIDC and the dedicated `kiwi-demo-github-deploy` role.
+No stored AWS access keys or application API keys are needed. The role can
+list/upload only the demo prefix and refresh the website's CloudFront cache;
+it cannot write the main website's files or delete objects.
 
-3. In the repository, choose **Settings → Pages → Build and deployment → Source → GitHub Actions**.
-4. Open **Actions → Deploy demo to GitHub Pages → Run workflow**, choosing `main`. If the initial push ran before Pages was enabled, rerun it after changing the setting.
-5. Open the site URL shown by the deployment. Later pushes to `main` update it automatically.
+The deployment script uploads assets before HTML, retains older assets for
+cached pages, makes HTML revalidate, refreshes `/demo` and `/demo/*`, and
+byte-compares all published files. The public HTML entry point is checked too.
+For a local upload of an already built demo, with AWS CLI credentials configured:
 
-The relative Vite base and hash routes work at `https://YOUR-OWNER.github.io/YOUR-REPO/` without changing the app configuration. Build output, local archives, and dependencies are ignored by Git. See [GitHub's custom Pages workflow documentation](https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages).
+```sh
+bash scripts/deploy-s3.sh --plan-only
+bash scripts/deploy-s3.sh --apply
+bash scripts/deploy-s3.sh --verify-only
+```
+
+Keep the old Pages site available until the new demo has passed verification.
+Browser state is local to each origin, so a visitor's old tab state does not
+transfer to the new domain. No server-side user data needs migration.
 
 ## What works
 
