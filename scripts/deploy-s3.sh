@@ -18,6 +18,9 @@ if [[ "$mode" == --plan-only ]]; then
 fi
 aws s3 sync dist/ "s3://$bucket/$prefix/" --exclude index.html --no-progress --cache-control 'public, max-age=300, must-revalidate'
 aws s3 cp dist/index.html "s3://$bucket/$prefix/index.html" --no-progress --content-type 'text/html; charset=utf-8' --cache-control 'no-cache, max-age=0, must-revalidate'
-invalidation_id="$(aws cloudfront create-invalidation --distribution-id "$distribution_id" --paths '/demo' '/demo/*' --query Invalidation.Id --output text)"
-aws cloudfront wait invalidation-completed --distribution-id "$distribution_id" --id "$invalidation_id"
+if invalidation_id="$(aws cloudfront create-invalidation --distribution-id "$distribution_id" --paths '/demo' '/demo/*' --query Invalidation.Id --output text)"; then
+  aws cloudfront wait invalidation-completed --distribution-id "$distribution_id" --id "$invalidation_id"
+else
+  echo 'Upload complete; cache invalidation unavailable. Assets expire within five minutes. Verification will fail if cached content is stale; rerun --verify-only after expiry.' >&2
+fi
 python3 scripts/check-deployment.py --live https://kiwiai.org/demo/index.html

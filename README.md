@@ -56,7 +56,10 @@ it cannot write the main website's files or delete objects.
 
 The deployment script uploads assets before HTML, retains older assets for
 cached pages, makes HTML revalidate, refreshes `/demo` and `/demo/*`, and
-byte-compares all published files. The public HTML entry point is checked too.
+byte-compares all published files. The public HTML entry point is checked too. If a local AWS profile cannot
+invalidate CloudFront, uploads still complete and verification checks the current
+public files; rerun `--verify-only` after the five-minute asset cache expires if
+it reports stale files. The CI role has invalidation permission.
 For a local upload of an already built demo, with AWS CLI credentials configured:
 
 ```sh
